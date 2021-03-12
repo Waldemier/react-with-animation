@@ -1,23 +1,64 @@
-import logo from './logo.svg';
+import {useState} from 'react'
+import { Transition, CSSTransition } from 'react-transition-group';
 import './App.css';
+import {List} from './List' 
 
 function App() {
+
+  const [toggle, setToggle] = useState(true)
+  const [toggle2, setToggle2] = useState(true)
+  const [items, setItems] = useState([
+    {id: 1, title: 'Item1'},
+    {id: 2, title: 'Item2'},
+    {id: 3, title: 'Item3'}
+  ])
+
+  const removeItem = id => setItems(items.filter(i => i.id !== id))
+
+  const addItem = () => {
+    const title = prompt('Enter item title')
+    const id = Date.now()
+
+    setItems(items.concat([{title, id}]))
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className="container">
+      <button onClick={() => setToggle(!toggle)}>Toggle</button>
+      <button onClick={() => setToggle2(!toggle2)}>Toggle 2</button>
+      <button onClick={addItem}>Add Item</button>
+      <hr/>
+      <div className={'blocks'}>
+        {/* entering, entered, exiting, exited */}
+        <Transition 
+          in={toggle} 
+          timeout={{ enter: 1000, exit: 500 }} 
+          mountOnEnter 
+          unmountOnExit 
+          onEnter={ () => console.log("onEnter") }
+          onEntering={ () => console.log("onEntering") }
+          onEntered={ () => console.log("onEntered") }
+          onExit={ () => console.log("onExit") }
+          onExiting={ () => console.log("onExiting") }
+          onExited={ () => console.log("onExited") }
+          >
+          {state => <div className={`square blue ${state}`}>{state}</div>}
+        </Transition>
+
+        {/* prefix classNames="os" */}
+        <CSSTransition
+          in={toggle2}
+          timeout={1000}
+          classNames="os"
+          mountOnEnter 
+          unmountOnExit 
         >
-          Learn React
-        </a>
-      </header>
+            <div className={`square orange`}>{toggle2.toString()}</div>
+        </CSSTransition>
+      </div>
+      <div className={'blocks'}>
+        <List items={items} onRemove={removeItem}/>
+      </div>
     </div>
   );
 }
